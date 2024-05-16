@@ -29,8 +29,12 @@ public class Product {
 
     private LocalDateTime enroll;
 
-    public void removeStock(Long count) {
-        long restStock = this.stock - count;
+    public void addStock(Long quantity) {
+        this.stock += quantity;
+    }
+
+    public void removeStock(Long quantity) {
+        long restStock = this.stock - quantity;
 
         if (restStock < 0) {
             throw new ProductException(ProductExceptionType.ALREADY_EXIST_PRODUCT);
