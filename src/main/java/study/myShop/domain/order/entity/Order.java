@@ -3,8 +3,11 @@ package study.myShop.domain.order.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import study.myShop.domain.member.entity.Member;
+import study.myShop.domain.order.exception.OrderException;
+import study.myShop.domain.order.exception.OrderExceptionType;
 import study.myShop.domain.payment.entity.Payment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +36,7 @@ public class Order {
 
     private Long totalPrice;
     private String orderComment; // 주문 요청사항
-    private String orderEnroll; // 주문 일자
+    private LocalDateTime orderEnroll; // 주문 일자
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -47,4 +50,48 @@ public class Order {
         orderProducts.add(orderProduct);
         orderProduct.setOrder(this);
     }
+
+    public static Order create(Member member, Payment payment, List<OrderProduct> orderProducts
+    , String address, String orderComment, String recipient, String tel) {
+        Order order = Order.builder()
+                .member(member)
+                .payment(payment)
+                .orderProducts(orderProducts)
+
+                .orderComment(orderComment)
+                .orderEnroll(LocalDateTime.now())
+                .orderStatus(OrderStatus.ORDER)
+
+                .recipient(recipient)
+                .address(address)
+                .tel(tel)
+                .build();
+
+        for (OrderProduct orderProduct : orderProducts) {
+            order.addOrderProduct(orderProduct);
+        }
+
+        return order;
+    }
+
+    public void cancel() {
+        if (orderStatus == OrderStatus.SHIP || orderStatus == OrderStatus.COMPLETE) {
+            throw new OrderException(OrderExceptionType.ALREADY_COMPLETED);
+        }
+
+        this.orderStatus = OrderStatus.CANCEL;
+        for (OrderProduct orderProduct : orderProducts) {
+            orderProduct.cancel();
+        }
+    }
+
+    // 주문 상품 전체 가격 조회
+    public long getTotalPrice() {
+        long totalPrice = 0;
+        for (OrderProduct orderProduct : orderProducts) {
+            totalPrice += orderProduct.getTotalPrice();
+        }
+        return totalPrice;
+    }
 }
+

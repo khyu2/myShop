@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 public class OrderProduct {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +32,12 @@ public class OrderProduct {
         // 상품 가격 세팅. 추후 쿠폰이나 할인 등 적용 예정
         orderProduct.setOrderPrice(product.getPrice());
 
-        product.removeStock(count);
+        product.removeStock(count); // 주문 개수만큼 재고량 감소
         return orderProduct;
+    }
+
+    public void cancel() {
+        getProduct().addStock(count);
     }
 
     public long getTotalPrice() {

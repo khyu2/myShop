@@ -2,35 +2,43 @@ package study.myShop.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.entity.OrderProduct;
+import study.myShop.domain.order.entity.Product;
+import study.myShop.domain.order.exception.ProductException;
+import study.myShop.domain.order.exception.ProductExceptionType;
 import study.myShop.domain.order.repository.OrderProductRepository;
 import study.myShop.domain.order.repository.ProductRepository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OrderProductService {
 
-    private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final ProductRepository productRepository;
 
-    List<OrderProduct> create(List<OrderProductRequest> orderProductRequests) {
-        List<OrderProduct> orderProducts = new ArrayList<>();
+    public List<OrderProduct> create(List<OrderProductRequest> orderProductRequestList) {
+        List<OrderProduct> orderProductList = new ArrayList<>();
 
-        Map<Long, Long> productIdMap = new HashMap<>();
+        for (OrderProductRequest orderProductRequest : orderProductRequestList) {
+            OrderProduct orderProduct = new OrderProduct();
 
-        for (OrderProductRequest orderProductRequest : orderProductRequests) {
-            if (productIdMap.get(orderProductRequest.orderProductId()) != null) {
-                productIdMap.put(orderProductRequest.orderProductId(),
-                        productIdMap.get(orderProductRequest.orderProductId())
-                                + orderProductRequest.count());
-            }
+            Product product = productRepository.findById(orderProductRequest.orderProductId())
+                    .orElseThrow(
+                            () -> new ProductException(ProductExceptionType.NOT_FOUND_PRODUCT)
+                    );
+
+            orderProduct.setProduct(product);
+            orderProduct.setOrderPrice(orderProduct.getOrderPrice());
+            orderProduct.setCount(orderProductRequest.count());
+            orderProductList.add(orderProduct);
         }
-        return null;
+
+        return orderProductList;
     }
 }
