@@ -32,8 +32,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse update(Long id, ProductRequest productRequest) {
-        Product product = productRepository.findById(id).orElseThrow(
+    public ProductResponse update(Long productId, ProductRequest productRequest) {
+        Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductException(ProductExceptionType.NOT_FOUND_PRODUCT)
         );
 
@@ -43,12 +43,18 @@ public class ProductService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(
+    public void delete(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductException(ProductExceptionType.NOT_FOUND_PRODUCT)
         );
 
         productRepository.delete(product);
+    }
+
+    public Product getOne(Long productId) {
+        return productRepository.findById(productId).orElseThrow(
+                () -> new ProductException(ProductExceptionType.NOT_FOUND_PRODUCT)
+        );
     }
 
     public List<Product> getAllProducts() {
