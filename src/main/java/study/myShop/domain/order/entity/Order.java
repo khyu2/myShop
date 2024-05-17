@@ -67,9 +67,9 @@ public class Order {
                 .tel(tel)
                 .build();
 
-        for (OrderProduct orderProduct : orderProducts) {
-            order.addOrderProduct(orderProduct);
-        }
+//        for (OrderProduct orderProduct : orderProducts) {
+//            order.addOrderProduct(orderProduct);
+//        }
 
         return order;
     }

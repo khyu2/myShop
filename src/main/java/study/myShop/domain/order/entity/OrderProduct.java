@@ -3,6 +3,7 @@ package study.myShop.domain.order.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter @Setter
@@ -42,5 +43,14 @@ public class OrderProduct {
 
     public long getTotalPrice() {
         return orderPrice * count;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderProduct{" +
+                "id=" + id +
+                ", orderPrice=" + orderPrice +
+                ", count=" + count +
+                '}';
     }
 }

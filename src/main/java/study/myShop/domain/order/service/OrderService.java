@@ -1,6 +1,7 @@
 package study.myShop.domain.order.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.member.entity.Member;
@@ -22,6 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class OrderService {
 
     private final MemberRepository memberRepository;
@@ -45,6 +47,9 @@ public class OrderService {
         // 주문이 OrderRequest로 들어오면 수신자 정보, 상품과 개수가 들어오는데
         // 상품과 개수를 리스트로 만들어 Order 에 저장한다
         List<OrderProduct> orderProducts = orderProductService.create(orderRequest.orderProductRequestList());
+        for (OrderProduct orderProduct : orderProducts) {
+            log.info(orderProduct.toString());
+        }
 
         // 결재 정보
         Payment payment = paymentService.create(orderRequest.paymentRequest());
@@ -64,5 +69,11 @@ public class OrderService {
         );
 
         order.cancel();
+    }
+
+    public Order getOne(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderException(OrderExceptionType.NOT_FOUND_ORDER)
+        );
     }
 }
