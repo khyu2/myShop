@@ -1,9 +1,9 @@
 package study.myShop.domain.member.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.member.dto.MemberDefaultDto;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.exception.MemberException;
@@ -67,5 +67,12 @@ public class MemberService {
         member.updateAddr(memberDto.addr());
         member.updateAddrDetails(memberDto.addrDetails());
         member.updateLastModifiedAt();
+    }
+
+    @Transactional(readOnly = true)
+    public Member getOne(Long id) {
+        return memberRepository.findById(id).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
+        );
     }
 }

@@ -32,7 +32,7 @@ public class Order {
     private Payment payment;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<OrderProduct> orderProducts = new ArrayList<>();
+    private final List<OrderProduct> orderProducts = new ArrayList<>();
 
     private Long totalPrice;
     private String orderComment; // 주문 요청사항
@@ -56,7 +56,7 @@ public class Order {
         Order order = Order.builder()
                 .member(member)
                 .payment(payment)
-                .orderProducts(orderProducts)
+//                .orderProducts(orderProducts)
 
                 .orderComment(orderComment)
                 .orderEnroll(LocalDateTime.now())
@@ -67,9 +67,9 @@ public class Order {
                 .tel(tel)
                 .build();
 
-//        for (OrderProduct orderProduct : orderProducts) {
-//            order.addOrderProduct(orderProduct);
-//        }
+        for (OrderProduct orderProduct : orderProducts) {
+            order.addOrderProduct(orderProduct);
+        }
 
         return order;
     }

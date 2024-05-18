@@ -18,6 +18,7 @@ public class JWTLoginSuccessProviderHandler extends SimpleUrlAuthenticationSucce
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         log.info("Success Login, JWT.Username: {}", userDetails.getUsername());
 
-        super.onAuthenticationSuccess(request, response, chain, authentication);
+//        super.onAuthenticationSuccess(request, response, chain, authentication);
+        response.getWriter().write("Success");
     }
 }

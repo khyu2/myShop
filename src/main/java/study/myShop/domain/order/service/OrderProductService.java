@@ -8,7 +8,6 @@ import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.order.entity.Product;
 import study.myShop.domain.order.exception.ProductException;
 import study.myShop.domain.order.exception.ProductExceptionType;
-import study.myShop.domain.order.repository.OrderProductRepository;
 import study.myShop.domain.order.repository.ProductRepository;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderProductService {
 
-    private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
 
     public List<OrderProduct> create(List<OrderProductRequest> orderProductRequestList) {
@@ -34,8 +32,8 @@ public class OrderProductService {
                     );
 
             orderProduct.setProduct(product);
-            orderProduct.setOrderPrice(orderProduct.getOrderPrice());
-            orderProduct.setCount(orderProductRequest.count());
+            orderProduct.setOrderPrice(product.getPrice()); // 주문 상품의 가격 = 상품의 가격
+            orderProduct.setCount(orderProductRequest.count()); // 주문 상품 개수 = 주문 요청 개수
             orderProductList.add(orderProduct);
         }
 

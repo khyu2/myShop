@@ -14,6 +14,8 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.info("Login Failed");
-        super.onAuthenticationFailure(request, response, exception);
+//        super.onAuthenticationFailure(request, response, exception);
+        response.getWriter().write("Fail!");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

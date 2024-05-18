@@ -3,6 +3,7 @@ package study.myShop.global.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,9 +15,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Slf4j
 public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "/login";  // /login/oauth2/ + ????? 로 오는 요청을 처리할 것이다
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/login";
 
     private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
 
@@ -33,7 +35,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 
     public JsonUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper) {
 
-        super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);   // 위에서 설정한  /oauth2/login/* 의 요청에, GET으로 온 요청을 처리하기 위해 설정한다.
+        super(DEFAULT_LOGIN_PATH_REQUEST_MATCHER);   // 위에서 설정한  /login/* 의 요청에, GET으로 온 요청을 처리하기 위해 설정한다.
 
         this.objectMapper = objectMapper;
     }
@@ -50,6 +52,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
 
         String username = usernamePasswordMap.get(USERNAME_KEY);
         String password = usernamePasswordMap.get(PASSWORD_KEY);
+        log.info("username = {}, password = {}", username, password);
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password); //principal 과 credentials 전달
 
