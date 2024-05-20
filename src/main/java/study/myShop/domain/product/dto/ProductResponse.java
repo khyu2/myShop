@@ -1,8 +1,8 @@
-package study.myShop.domain.order.dto;
+package study.myShop.domain.product.dto;
 
 import lombok.Data;
-import study.myShop.domain.order.entity.Category;
-import study.myShop.domain.order.entity.Product;
+import study.myShop.domain.product.entity.Category;
+import study.myShop.domain.product.entity.Product;
 
 import java.time.LocalDateTime;
 

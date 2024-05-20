@@ -1,14 +1,14 @@
-package study.myShop.domain.order.service;
+package study.myShop.domain.product.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import study.myShop.domain.order.dto.ProductRequest;
-import study.myShop.domain.order.dto.ProductResponse;
-import study.myShop.domain.order.entity.Product;
-import study.myShop.domain.order.exception.ProductException;
-import study.myShop.domain.order.exception.ProductExceptionType;
-import study.myShop.domain.order.repository.ProductRepository;
+import study.myShop.domain.product.exception.ProductException;
+import study.myShop.domain.product.exception.ProductExceptionType;
+import study.myShop.domain.product.dto.ProductRequest;
+import study.myShop.domain.product.dto.ProductResponse;
+import study.myShop.domain.product.entity.Product;
+import study.myShop.domain.product.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
