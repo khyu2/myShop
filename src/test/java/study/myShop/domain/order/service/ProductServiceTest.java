@@ -4,10 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import study.myShop.domain.order.dto.ProductRequest;
-import study.myShop.domain.order.dto.ProductResponse;
-import study.myShop.domain.order.entity.Category;
-import study.myShop.domain.order.entity.Product;
+import study.myShop.domain.product.dto.ProductRequest;
+import study.myShop.domain.product.dto.ProductResponse;
+import study.myShop.domain.product.entity.Category;
+import study.myShop.domain.product.entity.Product;
+import study.myShop.domain.product.service.ProductService;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class ProductServiceTest {
 
-    @Autowired ProductService productService;
+    @Autowired
+    ProductService productService;
 
     @Test
     @Transactional

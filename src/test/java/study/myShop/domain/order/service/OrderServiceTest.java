@@ -13,15 +13,16 @@ import study.myShop.domain.member.service.JwtService;
 import study.myShop.domain.member.service.MemberService;
 import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.dto.OrderRequest;
-import study.myShop.domain.order.dto.ProductRequest;
-import study.myShop.domain.order.entity.Category;
 import study.myShop.domain.order.entity.Order;
-import study.myShop.domain.order.entity.Product;
-import study.myShop.domain.order.exception.ProductException;
 import study.myShop.domain.order.repository.OrderRepository;
 import study.myShop.domain.payment.dto.PaymentRequest;
 import study.myShop.domain.payment.entity.PaymentGateway;
 import study.myShop.domain.payment.entity.PaymentMethod;
+import study.myShop.domain.product.dto.ProductRequest;
+import study.myShop.domain.product.entity.Category;
+import study.myShop.domain.product.entity.Product;
+import study.myShop.domain.product.exception.ProductException;
+import study.myShop.domain.product.service.ProductService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ class OrderServiceTest {
     @Autowired OrderService orderService;
     @Autowired OrderRepository orderRepository;
     @Autowired MemberService memberService;
-    @Autowired ProductService productService;
+    @Autowired
+    ProductService productService;
     @Autowired OrderProductService orderProductService;
     @Autowired JwtService jwtService;
 
