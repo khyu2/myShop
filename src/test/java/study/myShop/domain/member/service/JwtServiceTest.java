@@ -3,19 +3,25 @@ package study.myShop.domain.member.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.entity.MemberStatus;
 import study.myShop.domain.member.repository.MemberRepository;
 
+import java.io.IOException;
+
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static org.junit.jupiter.api.Assertions.*;
+
+// 참고 https://ttl-blog.tistory.com/272
 
 @SpringBootTest
 @Transactional
@@ -121,10 +127,45 @@ class JwtServiceTest {
     void refreshToken_헤더_설정() throws Exception {
         //given
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-
+        String refreshToken = jwtService.createRefreshToken();
 
         //when
+        jwtService.setRefreshTokenHeader(mockHttpServletResponse, refreshToken);
 
         //then
+        String refresh = mockHttpServletResponse.getHeader(refreshHeader);
+
+        assertEquals(refresh, refreshToken);
+    }
+
+    @Test
+    void username_추출() throws Exception {
+        String accessToken = jwtService.createAccessToken(username);
+        String refreshToken = jwtService.createRefreshToken();
+        HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
+
+        String requestAccessToken = jwtService.extractAccessToken(httpServletRequest);
+
+        //when
+        String extractUsername = jwtService.extractUsername(requestAccessToken);
+
+        //then
+        assertEquals(extractUsername, username);
+    }
+
+    private HttpServletRequest setRequest(String accessToken, String refreshToken) throws IOException {
+
+        MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
+        jwtService.sendToken(mockHttpServletResponse,accessToken,refreshToken);
+
+        String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
+        String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
+
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+
+        httpServletRequest.addHeader(accessHeader, BEARER+headerAccessToken);
+        httpServletRequest.addHeader(refreshHeader, BEARER+headerRefreshToken);
+
+        return httpServletRequest;
     }
 }
