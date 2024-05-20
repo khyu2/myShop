@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import study.myShop.domain.order.entity.Order;
+import study.myShop.domain.order.entity.OrderProduct;
+import study.myShop.domain.product.entity.Cart;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +24,11 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private final List<Order> orders = new ArrayList<>();
+
+    // Member 객체에서 Cascade.ALL 을 해줬기 때문에 CartService에서 save 필요 x
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -50,6 +57,14 @@ public class Member {
     /* 정보 수정(비밀번호, 전화번호, 주소, 상세주소) */
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
         this.password = passwordEncoder.encode(password);
+    }
+
+    public void addProductsInCart(OrderProduct orderProduct) {
+        if (cart == null) {
+            this.cart = new Cart(); // 장바구니 존재하지 않으면 생성
+        }
+        cart.setMember(this);
+        cart.getOrderProducts().add(orderProduct);
     }
 
     public void updateTel(String tel) {

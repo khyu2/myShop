@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.entity.OrderProduct;
-import study.myShop.domain.order.entity.Product;
-import study.myShop.domain.order.exception.ProductException;
-import study.myShop.domain.order.exception.ProductExceptionType;
-import study.myShop.domain.order.repository.ProductRepository;
+import study.myShop.domain.product.entity.Product;
+import study.myShop.domain.product.exception.ProductException;
+import study.myShop.domain.product.exception.ProductExceptionType;
+import study.myShop.domain.product.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;

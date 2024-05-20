@@ -19,6 +19,8 @@ import study.myShop.domain.order.exception.OrderExceptionType;
 import study.myShop.domain.order.repository.OrderRepository;
 import study.myShop.domain.payment.entity.Payment;
 import study.myShop.domain.payment.service.PaymentService;
+import study.myShop.domain.product.entity.Cart;
+import study.myShop.domain.product.service.CartService;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,20 +36,20 @@ public class OrderService {
     private final PaymentService paymentService;
     private final JwtService jwtService;
     private final OrderProductService orderProductService;
+    private final CartService cartService;
 
     @Transactional
     public Long order(OrderRequest orderRequest, HttpServletRequest request) throws ServletException, IOException {
 
-        // 주소
+        // 사용자 정보
         String address = orderRequest.address();
-
-        // 휴대폰 번호
         String tel = orderRequest.tel();
         String orderComment = orderRequest.orderComment();
         String recipient = orderRequest.recipient();
 
         // 주문이 OrderRequest로 들어오면 수신자 정보, 상품과 개수가 들어오는데
         // 상품과 개수를 리스트로 만들어 Order 에 저장한다
+        // (수정 예정) 모든 주문은 Cart 를 통해 입력받은 뒤 처리한다 -> orderProductService를 Cart로 위임
         List<OrderProduct> orderProducts = orderProductService.create(orderRequest.orderProductRequestList());
         for (OrderProduct orderProduct : orderProducts) {
             log.info(orderProduct.toString());
@@ -64,6 +66,9 @@ public class OrderService {
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
+
+        Cart cart = member.getCart();
+
 
         Order order = Order.create(member, payment, orderProducts, address, orderComment, recipient, tel);
 
