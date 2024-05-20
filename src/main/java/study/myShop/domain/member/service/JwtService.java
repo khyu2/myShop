@@ -76,6 +76,9 @@ public class JwtService {
         member.destroyRefreshToken();
     }
 
+    /**
+     * response set ContentType, Status, AccessToken, RefreshToken
+     */
     public void sendToken(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);

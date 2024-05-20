@@ -43,7 +43,7 @@ class JwtServiceTest {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String USERNAME_CLAIM = "username";
     private static final String BEARER = "Bearer ";
-    private String username = "ww@mail.com";
+    private final String username = "ww@mail.com";
 
     @BeforeEach
     public void init(){
@@ -156,7 +156,7 @@ class JwtServiceTest {
     private HttpServletRequest setRequest(String accessToken, String refreshToken) throws IOException {
 
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-        jwtService.sendToken(mockHttpServletResponse,accessToken,refreshToken);
+        jwtService.sendToken(mockHttpServletResponse, accessToken, refreshToken);
 
         String headerAccessToken = mockHttpServletResponse.getHeader(accessHeader);
         String headerRefreshToken = mockHttpServletResponse.getHeader(refreshHeader);
