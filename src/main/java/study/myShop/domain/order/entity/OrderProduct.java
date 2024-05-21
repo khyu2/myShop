@@ -38,8 +38,13 @@ public class OrderProduct {
         // 상품 가격 세팅. 추후 쿠폰이나 할인 등 적용 예정
         orderProduct.setOrderPrice(product.getPrice());
 
-        if (count != null) product.removeStock(count); // 주문 개수만큼 재고량 감소
+        // 주문 상품을 만들 때 재고가 감소하면 안됨 -> Order 가 실행되었을 때 감소
+        // if (count != null) product.removeStock(count);
         return orderProduct;
+    }
+
+    public void update() {
+        product.removeStock(count);
     }
 
     public void cancel() {

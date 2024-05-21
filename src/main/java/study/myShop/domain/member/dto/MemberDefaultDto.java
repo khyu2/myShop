@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.entity.MemberStatus;
+import study.myShop.domain.product.entity.Cart;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,7 @@ public record MemberDefaultDto(
 ) {
     public Member toEntity() {
         return Member.builder().email(email).password(password).tel(tel).status(MemberStatus.USER)
-                .addr(addr).addrDetails(addrDetails).createdAt(LocalDateTime.now()).build();
+                .addr(addr).addrDetails(addrDetails).cart(new Cart()).createdAt(LocalDateTime.now()).build();
     }
 
     public boolean invalidPassword() {

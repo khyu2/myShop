@@ -47,30 +47,22 @@ public class OrderService {
         String orderComment = orderRequest.orderComment();
         String recipient = orderRequest.recipient();
 
-        // 주문이 OrderRequest로 들어오면 수신자 정보, 상품과 개수가 들어오는데
-        // 상품과 개수를 리스트로 만들어 Order 에 저장한다
-        // (수정 예정) 모든 주문은 Cart 를 통해 입력받은 뒤 처리한다 -> orderProductService를 Cart로 위임
-        List<OrderProduct> orderProducts = orderProductService.create(orderRequest.orderProductRequestList());
-        for (OrderProduct orderProduct : orderProducts) {
-            log.info(orderProduct.toString());
-        }
-
         // 결재 정보
         Payment payment = paymentService.create(orderRequest.paymentRequest());
 
         // header에서 유저 정보 꺼내 저장하기
         String accessToken = jwtService.extractAccessToken(request);
-        log.info(accessToken);
         String email = jwtService.extractUsername(accessToken);
 
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
-        Cart cart = member.getCart();
+        // 주문이 OrderRequest로 들어오면 수신자 정보, 상품과 개수가 들어오는데
+        // 상품과 개수를 리스트로 만들어 Order 에 저장한다
+        // (수정 예정) 모든 주문은 Cart 를 통해 입력받은 뒤 처리한다 -> orderProductService를 Cart로 위임
 
-
-        Order order = Order.create(member, payment, orderProducts, address, orderComment, recipient, tel);
+        Order order = Order.create(member, payment, address, orderComment, recipient, tel);
 
         return orderRepository.save(order).getId();
     }

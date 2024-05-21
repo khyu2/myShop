@@ -6,6 +6,7 @@ import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.order.exception.OrderException;
 import study.myShop.domain.order.exception.OrderExceptionType;
 import study.myShop.domain.payment.entity.Payment;
+import study.myShop.domain.product.entity.Cart;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,14 +50,14 @@ public class Order {
     public void addOrderProduct(OrderProduct orderProduct) {
         orderProducts.add(orderProduct);
         orderProduct.setOrder(this);
+        orderProduct.update(); // 상품 재고 감소
     }
 
-    public static Order create(Member member, Payment payment, List<OrderProduct> orderProducts
+    public static Order create(Member member, Payment payment
     , String address, String orderComment, String recipient, String tel) {
         Order order = Order.builder()
                 .member(member)
                 .payment(payment)
-//                .orderProducts(orderProducts)
 
                 .orderComment(orderComment)
                 .orderEnroll(LocalDateTime.now())
@@ -67,8 +68,11 @@ public class Order {
                 .tel(tel)
                 .build();
 
-        for (OrderProduct orderProduct : orderProducts) {
-            order.addOrderProduct(orderProduct);
+        // 기존 create 에서 OrderProductList를 받는 대신 member.cart에서 내부적으로 처리
+        List<OrderProduct> wishes = member.getCart().getOrderProducts();
+
+        for (OrderProduct wish: wishes) {
+            order.addOrderProduct(wish);
         }
 
         return order;

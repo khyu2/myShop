@@ -60,9 +60,6 @@ public class Member {
     }
 
     public void addProductsInCart(OrderProduct orderProduct) {
-        if (cart == null) {
-            this.cart = new Cart(); // 장바구니 존재하지 않으면 생성
-        }
         cart.setMember(this);
         cart.getOrderProducts().add(orderProduct);
     }
