@@ -38,7 +38,7 @@ public class OrderProduct {
         // 상품 가격 세팅. 추후 쿠폰이나 할인 등 적용 예정
         orderProduct.setOrderPrice(product.getPrice());
 
-        product.removeStock(count); // 주문 개수만큼 재고량 감소
+        if (count != null) product.removeStock(count); // 주문 개수만큼 재고량 감소
         return orderProduct;
     }
 

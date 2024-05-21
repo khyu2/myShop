@@ -31,9 +31,9 @@ import java.util.List;
 public class CartService {
 
     private final MemberRepository memberRepository;
-    private final CartRepository cartRepository;
     private final JwtService jwtService;
 
+    @Transactional
     public void insertProducts(List<OrderProduct> orderProducts, HttpServletRequest request) throws ServletException, IOException {
         // 사용자 정보 추출
         String email = getUsername(request);
@@ -48,7 +48,30 @@ public class CartService {
         }
     }
 
-    public List<OrderProduct> getCart(HttpServletRequest request) throws ServletException, IOException {
+    /**
+     * 제거할 상품 목록
+     * 사용자 장바구니 꺼내와서 List에서 제거
+     */
+    @Transactional
+    public void removeProducts(List<OrderProduct> removeProducts, HttpServletRequest request) throws ServletException, IOException {
+        String email = getUsername(request);
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
+        );
+
+        Cart cart = member.getCart();
+        List<OrderProduct> orderProducts = cart.getOrderProducts();
+
+        // 장바구니 순회하며 removeProducts 에 포함된 상품들 제거
+        // -> 만약 수량을 2개 -> 1개로 줄이는 거면 어떻게 처리하지? -> update로 따로 관리
+        // OrderProduct를 ArrayList로 관리할 필요가 있나? HashMap을 통한 삽입, 삭제가 더 효율적
+        // 로직: 각 주문상품을 순회하며 삭제할 상품과 '이름'이 같다면 제거한다 (수량 x)
+        orderProducts.removeIf(orderProduct ->
+                removeProducts.stream().anyMatch(remove -> remove.getProduct().getName().equals(orderProduct.getProduct().getName())));
+    }
+
+    public List<OrderProduct> getWishes(HttpServletRequest request) throws ServletException, IOException {
         String email = getUsername(request);
 
         Member member = memberRepository.findByEmail(email).orElseThrow(
