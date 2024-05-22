@@ -60,6 +60,7 @@ public class Member {
     }
 
     public void addProductsInCart(OrderProduct orderProduct) {
+        if (cart == null) cart = new Cart();
         cart.setMember(this);
         cart.getOrderProducts().add(orderProduct);
     }

@@ -13,17 +13,13 @@ import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
 import study.myShop.domain.order.dto.OrderRequest;
 import study.myShop.domain.order.entity.Order;
-import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.order.exception.OrderException;
 import study.myShop.domain.order.exception.OrderExceptionType;
 import study.myShop.domain.order.repository.OrderRepository;
 import study.myShop.domain.payment.entity.Payment;
 import study.myShop.domain.payment.service.PaymentService;
-import study.myShop.domain.product.entity.Cart;
-import study.myShop.domain.product.service.CartService;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +31,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PaymentService paymentService;
     private final JwtService jwtService;
-    private final OrderProductService orderProductService;
-    private final CartService cartService;
 
     @Transactional
     public Long order(OrderRequest orderRequest, HttpServletRequest request) throws ServletException, IOException {

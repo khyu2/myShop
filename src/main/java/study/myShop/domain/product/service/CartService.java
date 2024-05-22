@@ -10,7 +10,10 @@ import study.myShop.domain.member.exception.MemberException;
 import study.myShop.domain.member.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
+import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.entity.OrderProduct;
+import study.myShop.domain.order.repository.OrderProductRepository;
+import study.myShop.domain.order.service.OrderProductService;
 import study.myShop.domain.product.entity.Cart;
 import study.myShop.domain.product.repository.CartRepository;
 
@@ -31,10 +34,13 @@ import java.util.List;
 public class CartService {
 
     private final MemberRepository memberRepository;
+    private final OrderProductService orderProductService;
+    private final CartRepository cartRepository;
     private final JwtService jwtService;
 
+    // orderProducts로 받으면 안되고 OrderProductRequest를 통해 입력받아야함 -> OrderProductService 사용.
     @Transactional
-    public void insertProducts(List<OrderProduct> orderProducts, HttpServletRequest request) throws ServletException, IOException {
+    public void insertProducts(List<OrderProductRequest> orderProductRequests, HttpServletRequest request) throws ServletException, IOException {
         // 사용자 정보 추출
         String email = getUsername(request);
 
@@ -42,9 +48,15 @@ public class CartService {
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
+        List<OrderProduct> orderProducts = orderProductService.create(orderProductRequests);
+
         // 사용자 Cart에 주문상품 추가
         for (OrderProduct orderProduct : orderProducts) {
             member.addProductsInCart(orderProduct);
+        }
+
+        if (!cartRepository.existsByMemberId(member.getId())) {
+            cartRepository.save(member.getCart());
         }
     }
 

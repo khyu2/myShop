@@ -11,6 +11,7 @@ import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.entity.MemberStatus;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
+import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.product.entity.Category;
 import study.myShop.domain.product.entity.Product;
@@ -59,15 +60,15 @@ class CartServiceTest {
     @Test
     void 장바구니_상품_추가() throws Exception {
         //given
-        List<OrderProduct> orderProducts = new ArrayList<>();
+        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
         List<Product> products = productRepository.findAll();
 
         for (Product product : products) {
-            orderProducts.add(OrderProduct.createOrderProduct(product, 2L));
+            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L));
         }
 
         //when
-        cartService.insertProducts(orderProducts, request);
+        cartService.insertProducts(orderProductRequests, request);
         List<OrderProduct> wishes = cartService.getWishes(request);
 
         //then
@@ -78,13 +79,13 @@ class CartServiceTest {
     @Test
     void 장바구니_상품_제거() throws Exception {
         //given
-        List<OrderProduct> orderProducts = new ArrayList<>();
+        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
         List<Product> products = productRepository.findAll();
 
         for (Product product : products) {
-            orderProducts.add(OrderProduct.createOrderProduct(product, 2L));
+            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L));
         }
-        cartService.insertProducts(orderProducts, request);
+        cartService.insertProducts(orderProductRequests, request);
 
         //when
         List<OrderProduct> remove = new ArrayList<>();

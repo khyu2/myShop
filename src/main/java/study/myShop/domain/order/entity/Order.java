@@ -6,7 +6,6 @@ import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.order.exception.OrderException;
 import study.myShop.domain.order.exception.OrderExceptionType;
 import study.myShop.domain.payment.entity.Payment;
-import study.myShop.domain.product.entity.Cart;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

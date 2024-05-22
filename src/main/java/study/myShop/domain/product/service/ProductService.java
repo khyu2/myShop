@@ -1,8 +1,8 @@
 package study.myShop.domain.product.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.product.exception.ProductException;
 import study.myShop.domain.product.exception.ProductExceptionType;
 import study.myShop.domain.product.dto.ProductRequest;
@@ -15,6 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductRepository productRepository;

@@ -12,6 +12,7 @@ import study.myShop.domain.member.dto.MemberDefaultDto;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.service.JwtService;
 import study.myShop.domain.member.service.MemberService;
+import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.dto.OrderRequest;
 import study.myShop.domain.order.entity.Order;
 import study.myShop.domain.order.entity.OrderProduct;
@@ -40,7 +41,7 @@ class OrderServiceTest {
     @Autowired OrderRepository orderRepository;
     @Autowired MemberService memberService;
     @Autowired ProductService productService;
-    @Autowired OrderProductService orderProductService;
+//    @Autowired OrderProductService orderProductService;
     @Autowired CartService cartService;
     @Autowired JwtService jwtService;
 
@@ -66,14 +67,13 @@ class OrderServiceTest {
         // 상품 추가
         ProductRequest productRequest = new ProductRequest("Apple", "Delicious Apple!", 2000L, 20L, Category.Food, null);
         productService.create(productRequest);
-        Product apple = productService.getOne(1L);
 
         // 주문 상품 추가
-        List<OrderProduct> orderProducts = new ArrayList<>();
-        orderProducts.add(OrderProduct.createOrderProduct(apple, 10L));
+        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
+        orderProductRequests.add(new OrderProductRequest(1L, 10L));
 
         // 장바구니에 주문 상품 추가
-        cartService.insertProducts(orderProducts, request);
+        cartService.insertProducts(orderProductRequests, request);
     }
 
     private OrderRequest getOrderRequest() {
@@ -113,11 +113,10 @@ class OrderServiceTest {
         //given
 
         // 주문 상품 30개 추가 -> 기존 재고 20개
-        Product apple = productService.getOne(1L);
-        List<OrderProduct> orderProducts = new ArrayList<>();
-        orderProducts.add(OrderProduct.createOrderProduct(apple, 30L));
+        List<OrderProductRequest> orderProductRequestList = new ArrayList<>();
+        orderProductRequestList.add(new OrderProductRequest(1L, 30L));
 
-        cartService.insertProducts(orderProducts, request);
+        cartService.insertProducts(orderProductRequestList, request);
 
         //when, then
         assertThrows(ProductException.class, () -> orderService.order(getOrderRequest(), request));
@@ -152,4 +151,6 @@ class OrderServiceTest {
         Product product = productService.getOne(2L);
         assertEquals(product.getStock(), 98);
     }
+
+    // 상품 취소 테스트 추가 예정
 }
