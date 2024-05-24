@@ -41,7 +41,6 @@ class OrderServiceTest {
     @Autowired OrderRepository orderRepository;
     @Autowired MemberService memberService;
     @Autowired ProductService productService;
-//    @Autowired OrderProductService orderProductService;
     @Autowired CartService cartService;
     @Autowired JwtService jwtService;
 

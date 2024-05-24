@@ -12,7 +12,6 @@ import study.myShop.domain.member.service.MemberService;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-
     private final MemberService memberService;
 
     @GetMapping("/")
