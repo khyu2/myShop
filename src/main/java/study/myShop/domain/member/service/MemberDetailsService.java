@@ -1,6 +1,7 @@
 package study.myShop.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +12,7 @@ import study.myShop.domain.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
@@ -21,6 +23,7 @@ public class MemberDetailsService implements UserDetailsService {
                 () -> new UsernameNotFoundException(username + "-> 사용자를 찾을 수 없습니다.")
         );
 
+        log.info("DB에서 가져온 유저정보 username = {}, password = {}", member.getEmail(), member.getPassword());
         return new MemberDetails(member);
     }
 }

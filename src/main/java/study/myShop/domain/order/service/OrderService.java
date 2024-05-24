@@ -33,7 +33,7 @@ public class OrderService {
     private final JwtService jwtService;
 
     @Transactional
-    public Long order(OrderRequest orderRequest, HttpServletRequest request) throws ServletException, IOException {
+    public Long order(OrderRequest orderRequest, HttpServletRequest request) {
 
         // 사용자 정보
         String address = orderRequest.address();
@@ -45,8 +45,10 @@ public class OrderService {
         Payment payment = paymentService.create(orderRequest.paymentRequest());
 
         // header에서 유저 정보 꺼내 저장하기
-        String accessToken = jwtService.extractAccessToken(request);
-        String email = jwtService.extractUsername(accessToken);
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_TOKEN));
+        String email = jwtService.extractUsername(accessToken)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
 
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)

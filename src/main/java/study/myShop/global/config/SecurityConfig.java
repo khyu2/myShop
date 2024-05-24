@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,11 +18,10 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import study.myShop.domain.member.repository.MemberRepository;
+import study.myShop.domain.member.service.JwtService;
 import study.myShop.domain.member.service.MemberDetailsService;
-import study.myShop.global.common.JWTLoginSuccessProviderHandler;
-import study.myShop.global.common.JsonUsernamePasswordAuthenticationFilter;
-import study.myShop.global.common.JwtAuthenticationEntryPoint;
-import study.myShop.global.common.LoginFailureHandler;
+import study.myShop.global.common.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,15 +31,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final MemberRepository memberRepository;
     private final MemberDetailsService memberDetailsService;
+    private final JwtService jwtService;
     private final ObjectMapper objectMapper;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> corsConfigurationSource())
-                .exceptionHandling(req -> req.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(req -> req.authenticationEntryPoint(jwtAuthenticationEntryPoint()))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req.
@@ -56,6 +54,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
+                .addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -80,8 +79,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JWTLoginSuccessProviderHandler jwtLoginSuccessProviderHandler() {
-        return new JWTLoginSuccessProviderHandler();
+    public JwtLoginSuccessProviderHandler jwtLoginSuccessProviderHandler() {
+        return new JwtLoginSuccessProviderHandler(jwtService, memberRepository);
+    }
+
+    @Bean
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        return new JwtAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
+        return new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
     }
 
     @Bean

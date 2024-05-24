@@ -16,6 +16,6 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         log.info("Login Failed");
 //        super.onAuthenticationFailure(request, response, exception);
         response.getWriter().write("Fail!");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 }

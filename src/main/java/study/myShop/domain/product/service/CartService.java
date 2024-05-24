@@ -94,7 +94,12 @@ public class CartService {
         return cart.getOrderProducts();
     }
 
-    private String getUsername(HttpServletRequest request) throws ServletException, IOException {
-        return jwtService.extractUsername(jwtService.extractAccessToken(request));
+    private String getUsername(HttpServletRequest request) {
+        String token = jwtService.extractAccessToken(request).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_TOKEN)
+        );
+
+        return jwtService.extractUsername(token)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 }

@@ -47,7 +47,12 @@ public class Member {
     private String refreshToken;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(this.password);
+        // Spring Security 특정 버전 이후부터는 {noop}을 접미사로 붙혀줘야 한다
+        this.password = "{noop}" + passwordEncoder.encode(this.password);
+    }
+
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.password); // 순서 중요, rawPassword, encodedPassword
     }
 
     public void signOut() {
