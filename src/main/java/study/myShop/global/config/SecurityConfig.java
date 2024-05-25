@@ -40,7 +40,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> corsConfigurationSource())
-                .exceptionHandling(req -> req.authenticationEntryPoint(jwtAuthenticationEntryPoint()))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req.
@@ -49,10 +48,11 @@ public class SecurityConfig {
                         requestMatchers("/v3/api-docs/**").permitAll().
                         anyRequest().authenticated())
                 .logout(logout -> logout.
-                        logoutSuccessUrl("/").
+                        logoutSuccessUrl("/~~").
                         invalidateHttpSession(true))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                .exceptionHandling(req -> req.authenticationEntryPoint(jwtAuthenticationEntryPoint()))
                 .addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -61,7 +61,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:${port}"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080"));
         configuration.addAllowedHeader("*");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
@@ -78,9 +78,14 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
+//    @Bean
+//    public JwtLoginSuccessProviderHandler jwtLoginSuccessProviderHandler() {
+//        return new JwtLoginSuccessProviderHandler(jwtService, memberRepository);
+//    }
+
     @Bean
-    public JwtLoginSuccessProviderHandler jwtLoginSuccessProviderHandler() {
-        return new JwtLoginSuccessProviderHandler(jwtService, memberRepository);
+    public JwtLoginSuccessHandler jwtLoginSuccessHandler() {
+        return new JwtLoginSuccessHandler(jwtService, memberRepository);
     }
 
     @Bean
@@ -108,7 +113,7 @@ public class SecurityConfig {
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter() {
         JsonUsernamePasswordAuthenticationFilter filter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
         filter.setAuthenticationManager(authenticationManager());
-        filter.setAuthenticationSuccessHandler(jwtLoginSuccessProviderHandler());
+        filter.setAuthenticationSuccessHandler(jwtLoginSuccessHandler());
         filter.setAuthenticationFailureHandler(loginFailureHandler());
         return filter;
     }

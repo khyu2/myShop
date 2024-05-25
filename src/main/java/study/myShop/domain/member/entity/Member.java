@@ -48,7 +48,7 @@ public class Member {
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         // Spring Security 특정 버전 이후부터는 {noop}을 접미사로 붙혀줘야 한다
-        this.password = "{noop}" + passwordEncoder.encode(this.password);
+        this.password = passwordEncoder.encode(this.password);
     }
 
     public boolean matchPassword(PasswordEncoder passwordEncoder, String password) {

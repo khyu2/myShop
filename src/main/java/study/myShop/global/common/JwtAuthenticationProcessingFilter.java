@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -30,6 +31,7 @@ import java.io.IOException;
  * 1. AccessToken X, RefreshToken X -> 로그인 실패, 403 UnAuthorized
  */
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -45,6 +47,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        log.info("JwtAuthenticationProcessingFilter.doFilterInternal 진입");
+        log.info("request URL = {}", request.getRequestURL());
 
         // request 에서 refreshToken 추출
         String refreshToken = jwtService.extractRefreshToken(request).filter(jwtService::isValid).orElse(null);
@@ -53,19 +57,16 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         if (refreshToken != null) {
             memberRepository.findByRefreshToken(refreshToken)
                     .ifPresent(member -> jwtService.sendAccessToken(response, jwtService.createAccessToken(member.getEmail())));
+            filterChain.doFilter(request, response);
             return;
         }
-
-//        refreshToken 존재하지 않으면 accessToken 대해서만 인증 진행
-//        jwtService.extractAccessToken(request).filter(jwtService::isValid)
-//                .ifPresent(accessToken -> jwtService.extractUsername(accessToken)
-//                .ifPresent(email -> memberRepository.findByEmail(email)
-//                .ifPresent(member -> saveAuthentication(member))));
 
         jwtService.extractAccessToken(request).filter(jwtService::isValid)
                 .flatMap(accessToken -> jwtService.extractUsername(accessToken)
                 .flatMap(memberRepository::findByEmail))
                 .ifPresent(this::saveAuthentication);
+
+        filterChain.doFilter(request, response);
     }
 
     private void saveAuthentication(Member member) {
@@ -73,6 +74,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 memberDetails, null, authoritiesMapper.mapAuthorities(memberDetails.getAuthorities()));
+
+        log.info("Authentication = {} ", authentication);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);

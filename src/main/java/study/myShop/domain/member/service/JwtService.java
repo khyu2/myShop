@@ -87,18 +87,13 @@ public class JwtService {
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
 
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
-        tokenMap.put(REFRESH_TOKEN_SUBJECT, refreshToken);
+        log.info("JwtService.sendAccessAndRefreshToken HttpStatus {}", response.getStatus());
     }
 
     public void sendAccessToken(HttpServletResponse response, String accessToken) {
         response.setStatus(HttpServletResponse.SC_OK);
 
         setAccessTokenHeader(response, accessToken);
-
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
     }
 
     public Optional<String> extractAccessToken(HttpServletRequest request) {

@@ -1,13 +1,14 @@
 package study.myShop.global.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.StreamUtils;
@@ -46,17 +47,28 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
         if(request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)  ) {
             throw new AuthenticationServiceException("Authentication Content-Type not supported: " + request.getContentType());
         }
+        log.info("JsonUsernamePasswordAuthenticationFilter attemptAuthentication 진입, 인증 시도");
 
         String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+
+        log.info("messageBody: {}", messageBody);
 
         Map<String, String> usernamePasswordMap = objectMapper.readValue(messageBody, Map.class);
 
         String username = usernamePasswordMap.get(USERNAME_KEY);
         String password = usernamePasswordMap.get(PASSWORD_KEY);
-        log.info("username = {}, password = {}", username, password);
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password); //principal 과 credentials 전달
+        log.info("authRequest = {}", authRequest);
 
         return this.getAuthenticationManager().authenticate(authRequest);
     }
+
+//    @Override
+//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+//        super.successfulAuthentication(request, response, chain, authResult);
+//        log.info("JsonUsernamePasswordAuthenticationFilter successfulAuthentication 진입");
+//
+//        getSuccessHandler().onAuthenticationSuccess(request, response, chain, authResult);
+//    }
 }

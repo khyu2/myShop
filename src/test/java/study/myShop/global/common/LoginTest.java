@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,15 +25,15 @@ import study.myShop.domain.member.service.JwtService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
-class JwtAuthenticationProcessingFilterTest {
+@AutoConfigureMockMvc
+public class LoginTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -47,6 +47,9 @@ class JwtAuthenticationProcessingFilterTest {
     @Autowired
     JwtService jwtService;
 
+    PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @Value("${jwt.access.header}")
     private String accessHeader;
     @Value("${jwt.refresh.header}")
@@ -59,14 +62,7 @@ class JwtAuthenticationProcessingFilterTest {
 
     private static String LOGIN_RUL = "/login";
 
-    PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-    private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
-    private static final String BEARER = "Bearer ";
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    public void clear() {
+    void clear() {
         em.flush();
         em.clear();
     }
@@ -85,73 +81,65 @@ class JwtAuthenticationProcessingFilterTest {
         return map;
     }
 
-
-    private Map getAccessAndRefreshToken() throws Exception {
+    @Test
+    void 로그인_성공_accessToken_refreshToken_발급성공() throws Exception {
+        //given
         Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
 
-        MvcResult result = mockMvc.perform(
-                        post(LOGIN_RUL)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(map)))
-                .andReturn();
+        //then
+        MvcResult mvcResult = mockMvc.perform(
+                post(LOGIN_RUL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(map))
+        ).andExpect(status().isOk()).andReturn();
 
-        String accessToken = result.getResponse().getHeader(accessHeader);
-        String refreshToken = result.getResponse().getHeader(refreshHeader);
-        System.out.println(result.getResponse().getHeaderNames());
-        System.out.println(result.getResponse().getHeader(accessHeader));
+        MockHttpServletResponse response = mvcResult.getResponse();
+        String accessToken = response.getHeader(accessHeader);
+        String refreshToken = response.getHeader(refreshHeader);
 
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put(accessHeader,accessToken);
-        tokenMap.put(refreshHeader,refreshToken);
+        String email = jwtService.extractUsername(accessToken).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
+        );
 
-        return tokenMap;
+        assertEquals(USERNAME, email);
+        assertTrue(jwtService.isValid(refreshToken));
     }
 
     @Test
-    void 잘못된_url_접근() throws Exception {
+    void 로그인_실패_아이디오류() throws Exception {
         //given
-        String url = "/hello";
+        Map<String, String> map = getUsernamePasswordMap(USERNAME + "###", PASSWORD);
 
         //then
-        mockMvc.perform(get(url)).andExpect(status().isForbidden());
-    }
-
-    @Test
-    void 로그인시_response에_token_발급() throws Exception {
-        //given
-        Map accessAndRefreshToken = getAccessAndRefreshToken();
-        String accessToken = (String) accessAndRefreshToken.get(accessHeader);
-
-        assertNotNull(accessToken);
-
-        //then
-//        mockMvc.perform()
-    }
-
-    // AccessToken X, RefreshToken X
-    @Test
-    void acX_reX() throws Exception {
-        // 인가받지 않은 로그인 요청 시, AuthenticationEntryPoint 로 진입한다
         mockMvc.perform(
-                get(LOGIN_RUL + "123")
+                post(LOGIN_RUL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(map))
+        ).andExpect(status().isForbidden());
+    }
+    @Test
+    void 로그인_실패_비밀번호오류() throws Exception {
+        //given
+        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD + "###");
+
+        //then
+        mockMvc.perform(
+                post(LOGIN_RUL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(map))
         ).andExpect(status().isForbidden());
     }
 
     @Test
-    void ac_notValid_reX() throws Exception {
+    void 로그인_형식_확인() throws Exception {
         //given
-        Map accessAndRefreshToken = getAccessAndRefreshToken();
-        String accessToken = (String) accessAndRefreshToken.get(accessHeader);
+        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
 
-        System.out.println(accessToken);
-//        String email = jwtService.extractUsername(accessToken).orElseThrow(
-//                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
-//        );
-
-//        System.out.println(email);
         //then
         mockMvc.perform(
-                get(LOGIN_RUL).header(accessHeader, BEARER + accessToken)
-        ).andExpect(status().isOk());
+                post(LOGIN_RUL)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(objectMapper.writeValueAsString(map))
+        ).andExpect(status().isForbidden());
     }
 }
