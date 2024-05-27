@@ -44,119 +44,97 @@
 10. View - thymeleaf, tailwind css 적용해보기
 
 파일 구조
-```
-📦src
- ┣ 📂main
- ┃ ┣ 📂java
- ┃ ┃ ┗ 📂study
- ┃ ┃ ┃ ┗ 📂myShop
- ┃ ┃ ┃ ┃ ┣ 📂domain
- ┃ ┃ ┃ ┃ ┃ ┣ 📂coupon
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜Coupon.java
- ┃ ┃ ┃ ┃ ┃ ┣ 📂member
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂controller
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜AuthController.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberDefaultDto.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Member.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberDetails.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberStatus.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂exception
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberException.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberExceptionType.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜MemberDetailsService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberService.java
- ┃ ┃ ┃ ┃ ┃ ┣ 📂order
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OrderProductRequest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜OrderRequest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Order.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OrderProduct.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜OrderStatus.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂exception
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OrderException.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜OrderExceptionType.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OrderProductRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜OrderRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OrderProductService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜OrderService.java
- ┃ ┃ ┃ ┃ ┃ ┣ 📂payment
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PaymentRequest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Payment.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜PaymentGateway.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PaymentMethod.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PaymentRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜PaymentService.java
- ┃ ┃ ┃ ┃ ┃ ┗ 📂product
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂dto
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductRequest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductResponse.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂entity
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Cart.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜Category.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜Product.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂exception
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜ProductException.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductExceptionType.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂repository
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CartRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductRepository.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜CartService.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductService.java
- ┃ ┃ ┃ ┃ ┣ 📂global
- ┃ ┃ ┃ ┃ ┃ ┣ 📂common
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JsonUsernamePasswordAuthenticationFilter.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtAuthenticationEntryPoint.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtAuthenticationProcessingFilter.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtLoginSuccessHandler.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtLoginSuccessProviderHandler.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜LoginFailureHandler.java
- ┃ ┃ ┃ ┃ ┃ ┣ 📂config
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜SecurityConfig.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜SwaggerConfig.java
- ┃ ┃ ┃ ┃ ┃ ┗ 📂exception
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BaseException.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜BaseExceptionType.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ErrorResponse.java
- ┃ ┃ ┃ ┃ ┗ 📜MyShopApplication.java
- ┃ ┗ 📂resources
- ┃ ┃ ┣ 📂static
- ┃ ┃ ┣ 📂templates
- ┃ ┃ ┣ 📜application-jwt.yml
- ┃ ┃ ┗ 📜application.yml
- ┗ 📂test
- ┃ ┗ 📂java
- ┃ ┃ ┗ 📂study
- ┃ ┃ ┃ ┗ 📂myShop
- ┃ ┃ ┃ ┃ ┣ 📂domain
- ┃ ┃ ┃ ┃ ┃ ┣ 📂member
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtServiceTest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MemberServiceTest.java
- ┃ ┃ ┃ ┃ ┃ ┣ 📂order
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜OrderServiceTest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜ProductServiceTest.java
- ┃ ┃ ┃ ┃ ┃ ┗ 📂product
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂service
- ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜CartServiceTest.java
- ┃ ┃ ┃ ┃ ┣ 📂global
- ┃ ┃ ┃ ┃ ┃ ┗ 📂common
- ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📜JwtAuthenticationProcessingFilterTest.java
- ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜LoginTest.java
- ┃ ┃ ┃ ┃ ┗ 📜MyShopApplicationTests.java
+```text
+├── MyShopApplication.java
+├── domain
+│   ├── coupon
+│   │   ├── dto
+│   │   │   └── CouponRequest.java
+│   │   ├── entity
+│   │   │   ├── Coupon.java
+│   │   │   └── CouponStatus.java
+│   │   └── repoAndService
+│   │       ├── CouponRepository.java
+│   │       └── CouponService.java
+│   ├── member
+│   │   ├── controller
+│   │   │   └── AuthController.java
+│   │   ├── dto
+│   │   │   └── MemberDefaultDto.java
+│   │   ├── entity
+│   │   │   ├── Member.java
+│   │   │   ├── MemberDetails.java
+│   │   │   └── MemberStatus.java
+│   │   ├── exception
+│   │   │   ├── MemberException.java
+│   │   │   └── MemberExceptionType.java
+│   │   ├── repository
+│   │   │   └── MemberRepository.java
+│   │   └── service
+│   │       ├── JwtService.java
+│   │       ├── MemberDetailsService.java
+│   │       └── MemberService.java
+│   ├── order
+│   │   ├── dto
+│   │   │   ├── OrderProductRequest.java
+│   │   │   └── OrderRequest.java
+│   │   ├── entity
+│   │   │   ├── Order.java
+│   │   │   ├── OrderProduct.java
+│   │   │   └── OrderStatus.java
+│   │   ├── exception
+│   │   │   ├── OrderException.java
+│   │   │   └── OrderExceptionType.java
+│   │   ├── repository
+│   │   │   ├── OrderProductRepository.java
+│   │   │   └── OrderRepository.java
+│   │   └── service
+│   │       ├── OrderProductService.java
+│   │       └── OrderService.java
+│   ├── payment
+│   │   ├── dto
+│   │   │   └── PaymentRequest.java
+│   │   ├── entity
+│   │   │   ├── Payment.java
+│   │   │   ├── PaymentGateway.java
+│   │   │   └── PaymentMethod.java
+│   │   ├── repository
+│   │   │   └── PaymentRepository.java
+│   │   └── service
+│   │       └── PaymentService.java
+│   └── product
+│       ├── dto
+│       │   ├── ProductRequest.java
+│       │   └── ProductResponse.java
+│       ├── entity
+│       │   ├── Cart.java
+│       │   ├── Category.java
+│       │   └── Product.java
+│       ├── exception
+│       │   ├── ProductException.java
+│       │   └── ProductExceptionType.java
+│       ├── repository
+│       │   ├── CartRepository.java
+│       │   └── ProductRepository.java
+│       └── service
+│           ├── CartService.java
+│           └── ProductService.java
+└── global
+    ├── common
+    │   ├── JsonUsernamePasswordAuthenticationFilter.java
+    │   ├── JwtAuthenticationEntryPoint.java
+    │   ├── JwtAuthenticationProcessingFilter.java
+    │   ├── JwtLoginSuccessHandler.java
+    │   ├── JwtLoginSuccessProviderHandler.java
+    │   └── LoginFailureHandler.java
+    ├── config
+    │   ├── SecurityConfig.java
+    │   └── SwaggerConfig.java
+    └── exception
+        ├── BaseException.java
+        ├── BaseExceptionType.java
+        └── ErrorResponse.java
+
+34 directories, 56 files
+
 ```
