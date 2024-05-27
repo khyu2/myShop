@@ -1,6 +1,7 @@
 package study.myShop.domain.order.dto;
 
 import jakarta.validation.constraints.NotNull;
+import study.myShop.domain.coupon.dto.CouponRequest;
 import study.myShop.domain.payment.dto.PaymentRequest;
 
 import java.util.List;
@@ -19,7 +20,8 @@ public record OrderRequest(
         @NotNull String orderComment,
         @NotNull String address,
         @NotNull String tel,
-        @NotNull String recipient
+        @NotNull String recipient,
+        CouponRequest couponRequest
 //        @NotNull List<OrderProductRequest> orderProducts
 ) {
 }

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import study.myShop.domain.coupon.dto.CouponRequest;
+import study.myShop.domain.coupon.repoAndService.CouponService;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.exception.MemberException;
 import study.myShop.domain.member.exception.MemberExceptionType;
@@ -30,6 +32,7 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final PaymentService paymentService;
+    private final CouponService couponService;
     private final JwtService jwtService;
 
     @Transactional
@@ -56,7 +59,13 @@ public class OrderService {
 
         // 주문이 OrderRequest로 들어오면 수신자 정보, 상품과 개수가 들어오는데
         // 상품과 개수를 리스트로 만들어 Order 에 저장한다
-        // (수정 예정) 모든 주문은 Cart 를 통해 입력받은 뒤 처리한다 -> orderProductService를 Cart로 위임
+        // (수정) 모든 주문은 Cart 를 통해 입력받은 뒤 처리한다 -> orderProductService를 Cart로 위임
+
+        /**
+         * 쿠폰 사용 처리
+         * 각각 주문 상품에 쿠폰을 적용해야 하는데 OrderProduct <-> Coupon 1:1 매핑시켜줘야 하나?
+         */
+        CouponRequest couponRequest = orderRequest.couponRequest();
 
         Order order = Order.create(member, payment, address, orderComment, recipient, tel);
 

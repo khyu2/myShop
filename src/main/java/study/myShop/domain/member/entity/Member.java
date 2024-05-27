@@ -3,6 +3,7 @@ package study.myShop.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import study.myShop.domain.coupon.entity.Coupon;
 import study.myShop.domain.order.entity.Order;
 import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.product.entity.Cart;
@@ -24,6 +25,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private final List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private final List<Coupon> coupons = new ArrayList<>();
 
     // Member 객체에서 Cascade.ALL 을 해줬기 때문에 CartService에서 save 필요 x
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
