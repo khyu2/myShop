@@ -2,8 +2,8 @@ package study.myShop.domain.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import study.myShop.domain.product.exception.ProductException;
-import study.myShop.domain.product.exception.ProductExceptionType;
+import study.myShop.domain.exception.ProductException;
+import study.myShop.domain.exception.ProductExceptionType;
 import study.myShop.domain.product.dto.ProductRequest;
 
 import java.time.LocalDateTime;

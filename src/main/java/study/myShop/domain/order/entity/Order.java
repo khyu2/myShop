@@ -3,8 +3,8 @@ package study.myShop.domain.order.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import study.myShop.domain.member.entity.Member;
-import study.myShop.domain.order.exception.OrderException;
-import study.myShop.domain.order.exception.OrderExceptionType;
+import study.myShop.domain.exception.OrderException;
+import study.myShop.domain.exception.OrderExceptionType;
 import study.myShop.domain.payment.entity.Payment;
 
 import java.time.LocalDateTime;

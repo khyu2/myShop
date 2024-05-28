@@ -1,4 +1,4 @@
-package study.myShop.domain.order.exception;
+package study.myShop.domain.exception;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import study.myShop.domain.coupon.dto.CouponRequest;
 import study.myShop.domain.coupon.entity.Coupon;
 import study.myShop.domain.member.entity.Member;
-import study.myShop.domain.member.exception.MemberException;
-import study.myShop.domain.member.exception.MemberExceptionType;
+import study.myShop.domain.exception.MemberException;
+import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.order.entity.Order;
 

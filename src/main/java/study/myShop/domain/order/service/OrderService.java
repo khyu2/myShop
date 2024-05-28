@@ -1,6 +1,5 @@
 package study.myShop.domain.order.service;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,19 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.coupon.dto.CouponRequest;
 import study.myShop.domain.coupon.repoAndService.CouponService;
 import study.myShop.domain.member.entity.Member;
-import study.myShop.domain.member.exception.MemberException;
-import study.myShop.domain.member.exception.MemberExceptionType;
+import study.myShop.domain.exception.MemberException;
+import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
 import study.myShop.domain.order.dto.OrderRequest;
 import study.myShop.domain.order.entity.Order;
-import study.myShop.domain.order.exception.OrderException;
-import study.myShop.domain.order.exception.OrderExceptionType;
+import study.myShop.domain.exception.OrderException;
+import study.myShop.domain.exception.OrderExceptionType;
 import study.myShop.domain.order.repository.OrderRepository;
 import study.myShop.domain.payment.entity.Payment;
 import study.myShop.domain.payment.service.PaymentService;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor

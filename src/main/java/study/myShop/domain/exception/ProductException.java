@@ -1,4 +1,4 @@
-package study.myShop.domain.product.exception;
+package study.myShop.domain.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

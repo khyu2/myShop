@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.myShop.domain.member.entity.Member;
+import study.myShop.domain.exception.ProductException;
+import study.myShop.domain.exception.ProductExceptionType;
 
 @Entity
 @Getter
@@ -34,5 +36,22 @@ public class Coupon {
     public void addMember(Member member) {
         this.member = member;
         member.getCoupons().add(this);
+    }
+
+    public Long getDiscountedPrice(Long productPrice) {
+        if (discountPrice != null) { // 고정 금액 할인 적용
+            long price = productPrice - discountPrice;
+            if (price < 0) {
+                throw new ProductException(ProductExceptionType.INCORRECT_DISCOUNT_APPLIED);
+            }
+            return price;
+        } else {
+            long discount = productPrice * discountRate;
+            long price = productPrice - discount;
+            if (price < 0) {
+                throw new ProductException(ProductExceptionType.INCORRECT_DISCOUNT_APPLIED);
+            }
+            return price;
+        }
     }
 }

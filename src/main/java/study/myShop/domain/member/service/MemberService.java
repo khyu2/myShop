@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.member.dto.MemberDefaultDto;
 import study.myShop.domain.member.entity.Member;
-import study.myShop.domain.member.exception.MemberException;
-import study.myShop.domain.member.exception.MemberExceptionType;
+import study.myShop.domain.exception.MemberException;
+import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 
 @Service

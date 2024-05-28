@@ -3,6 +3,7 @@ package study.myShop.domain.order.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import study.myShop.domain.coupon.entity.Coupon;
 import study.myShop.domain.product.entity.Cart;
 import study.myShop.domain.product.entity.Product;
 
@@ -29,6 +30,9 @@ public class OrderProduct {
     private Long orderPrice;
     private Long count;
 
+    private boolean couponCheck; // 쿠폰 사용 여부
+    private Long couponId;
+
     public static OrderProduct createOrderProduct(Product product, Long count) {
         OrderProduct orderProduct = new OrderProduct();
 
@@ -40,6 +44,19 @@ public class OrderProduct {
 
         // 주문 상품을 만들 때 재고가 감소하면 안됨 -> Order 가 실행되었을 때 감소
         // if (count != null) product.removeStock(count);
+        return orderProduct;
+    }
+
+    public static OrderProduct createOrderProduct(Product product, Long count, Coupon coupon) {
+        OrderProduct orderProduct = new OrderProduct();
+
+        orderProduct.setProduct(product);
+        orderProduct.setCount(count);
+
+        // coupon 이 들어오면 쿠폰 할인 적용
+        Long discountedPrice = coupon.getDiscountedPrice(product.getPrice());
+        orderProduct.setOrderPrice(discountedPrice);
+
         return orderProduct;
     }
 

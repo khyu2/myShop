@@ -1,4 +1,4 @@
-package study.myShop.domain.order.exception;
+package study.myShop.domain.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import study.myShop.global.exception.BaseExceptionType;
 
 @Getter
 @AllArgsConstructor
-public class OrderException extends BaseException {
+public class CouponException extends BaseException {
 
     private final BaseExceptionType exceptionType;
 }

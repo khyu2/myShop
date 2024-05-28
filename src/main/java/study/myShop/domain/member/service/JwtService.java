@@ -12,14 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import study.myShop.domain.member.entity.Member;
-import study.myShop.domain.member.exception.MemberException;
-import study.myShop.domain.member.exception.MemberExceptionType;
+import study.myShop.domain.exception.MemberException;
+import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
