@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
+import study.myShop.domain.coupon.dto.CouponRequest;
 import study.myShop.domain.member.dto.MemberDefaultDto;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.service.JwtService;
@@ -23,7 +24,7 @@ import study.myShop.domain.payment.entity.PaymentMethod;
 import study.myShop.domain.product.dto.ProductRequest;
 import study.myShop.domain.product.entity.Category;
 import study.myShop.domain.product.entity.Product;
-import study.myShop.domain.product.exception.ProductException;
+import study.myShop.domain.exception.ProductException;
 import study.myShop.domain.product.service.CartService;
 import study.myShop.domain.product.service.ProductService;
 
@@ -77,9 +78,10 @@ class OrderServiceTest {
 
     private OrderRequest getOrderRequest() {
         PaymentRequest paymentRequest = new PaymentRequest(PaymentMethod.CREDIT_CARD, PaymentGateway.SAMSUNG);
+        CouponRequest couponRequest = new CouponRequest("생일 쿠폰", "생일 축하", 1000L, null, 1L);
 
         return new OrderRequest(paymentRequest, "집앞에 놔주세요", "Seoul", "010-1234-4142",
-                "Kim");
+                "Kim", couponRequest);
     }
 
     @Test

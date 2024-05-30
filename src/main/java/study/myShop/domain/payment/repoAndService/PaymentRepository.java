@@ -1,4 +1,4 @@
-package study.myShop.domain.payment.repository;
+package study.myShop.domain.payment.repoAndService;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import study.myShop.domain.payment.entity.Payment;

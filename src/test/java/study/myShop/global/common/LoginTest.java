@@ -17,8 +17,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.entity.MemberStatus;
-import study.myShop.domain.member.exception.MemberException;
-import study.myShop.domain.member.exception.MemberExceptionType;
+import study.myShop.domain.exception.MemberException;
+import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
 

@@ -1,11 +1,10 @@
-package study.myShop.domain.payment.service;
+package study.myShop.domain.payment.repoAndService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import study.myShop.domain.payment.dto.PaymentRequest;
 import study.myShop.domain.payment.entity.Payment;
-import study.myShop.domain.payment.repository.PaymentRepository;
 
 @Service
 @RequiredArgsConstructor

@@ -18,7 +18,7 @@ import study.myShop.domain.exception.OrderException;
 import study.myShop.domain.exception.OrderExceptionType;
 import study.myShop.domain.order.repository.OrderRepository;
 import study.myShop.domain.payment.entity.Payment;
-import study.myShop.domain.payment.service.PaymentService;
+import study.myShop.domain.payment.repoAndService.PaymentService;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +69,12 @@ public class OrderService {
         return orderRepository.save(order).getId();
     }
 
+    /**
+     * 주문 취소 시 주의사항
+     * - 상품 재고 += 주문상품 개수
+     * - 쿠폰 사용 취소 -> 사용자 쿠폰 활성화
+     * - ...
+     */
     @Transactional
     public void cancel(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
