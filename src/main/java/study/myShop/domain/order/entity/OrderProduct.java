@@ -47,15 +47,12 @@ public class OrderProduct {
         return orderProduct;
     }
 
-    public static OrderProduct createOrderProduct(Product product, Long count, Coupon coupon) {
+    public static OrderProduct createOrderProduct(Product product, Long count, Long discountedPrice) {
         OrderProduct orderProduct = new OrderProduct();
 
-        orderProduct.setProduct(product);
-        orderProduct.setCount(count);
-
-        // coupon 이 들어오면 쿠폰 할인 적용
-        Long discountedPrice = coupon.getDiscountedPrice(product.getPrice());
-        orderProduct.setOrderPrice(discountedPrice);
+        orderProduct.setProduct(product); // 주문 상품에 상품 설정
+        orderProduct.setCount(count); // 주문 개수 설정
+        orderProduct.setOrderPrice(discountedPrice); // 할인 금액 적용
 
         return orderProduct;
     }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.coupon.entity.Coupon;
 import study.myShop.domain.coupon.repoAndService.CouponRepository;
+import study.myShop.domain.coupon.repoAndService.CouponService;
 import study.myShop.domain.exception.CouponException;
 import study.myShop.domain.exception.CouponExceptionType;
 import study.myShop.domain.order.dto.OrderProductRequest;
@@ -25,6 +26,7 @@ public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
+    private final CouponService couponService;
     private final CouponRepository couponRepository;
 
     public List<OrderProduct> create(List<OrderProductRequest> orderProductRequestList) {
@@ -38,13 +40,15 @@ public class OrderProductService {
                     );
 
             // 쿠폰 적용 여부 (쿠폰 아이디 존재 시 쿠폰 찾아서 적용)
-            OrderProduct orderProduct = new OrderProduct();
+            OrderProduct orderProduct;
             if (orderProductRequest.couponCheck()) {
                 Coupon coupon = couponRepository.findById(orderProductRequest.couponId()).orElseThrow(
                         () -> new CouponException(CouponExceptionType.NOT_FOUND_COUPON)
                 );
 
-                orderProduct = OrderProduct.createOrderProduct(product, orderProductRequest.count(), coupon);
+                // Entity 단에서 할인 적용 금액 계산하기보단 Service 단에서 처리하는게 좋음
+                Long discountedPrice = CouponService.getDiscountedPrice(coupon, product.getPrice());
+                orderProduct = OrderProduct.createOrderProduct(product, orderProductRequest.count(), discountedPrice);
             } else {
                 orderProduct = OrderProduct.createOrderProduct(product, orderProductRequest.count());
             }

@@ -37,21 +37,4 @@ public class Coupon {
         this.member = member;
         member.getCoupons().add(this);
     }
-
-    public Long getDiscountedPrice(Long productPrice) {
-        if (discountPrice != null) { // 고정 금액 할인 적용
-            long price = productPrice - discountPrice;
-            if (price < 0) {
-                throw new ProductException(ProductExceptionType.INCORRECT_DISCOUNT_APPLIED);
-            }
-            return price;
-        } else {
-            long discount = productPrice * discountRate;
-            long price = productPrice - discount;
-            if (price < 0) {
-                throw new ProductException(ProductExceptionType.INCORRECT_DISCOUNT_APPLIED);
-            }
-            return price;
-        }
-    }
 }

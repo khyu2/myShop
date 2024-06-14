@@ -70,7 +70,7 @@ class OrderServiceTest {
 
         // 주문 상품 추가
         List<OrderProductRequest> orderProductRequests = new ArrayList<>();
-        orderProductRequests.add(new OrderProductRequest(1L, 10L));
+        orderProductRequests.add(new OrderProductRequest(1L, 10L, false, null));
 
         // 장바구니에 주문 상품 추가
         cartService.insertProducts(orderProductRequests, request);
@@ -115,7 +115,7 @@ class OrderServiceTest {
 
         // 주문 상품 30개 추가 -> 기존 재고 20개
         List<OrderProductRequest> orderProductRequestList = new ArrayList<>();
-        orderProductRequestList.add(new OrderProductRequest(1L, 30L));
+        orderProductRequestList.add(new OrderProductRequest(1L, 30L, false, null));
 
         cartService.insertProducts(orderProductRequestList, request);
 
