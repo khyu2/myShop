@@ -64,7 +64,7 @@ class CartServiceTest {
         List<Product> products = productRepository.findAll();
 
         for (Product product : products) {
-            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L));
+            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L, false, null));
         }
 
         //when
@@ -83,7 +83,7 @@ class CartServiceTest {
         List<Product> products = productRepository.findAll();
 
         for (Product product : products) {
-            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L));
+            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L, false, null));
         }
         cartService.insertProducts(orderProductRequests, request);
 

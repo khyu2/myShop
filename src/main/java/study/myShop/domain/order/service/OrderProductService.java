@@ -26,7 +26,6 @@ public class OrderProductService {
 
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
-    private final CouponService couponService;
     private final CouponRepository couponRepository;
 
     public List<OrderProduct> create(List<OrderProductRequest> orderProductRequestList) {

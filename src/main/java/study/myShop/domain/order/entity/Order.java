@@ -52,7 +52,7 @@ public class Order {
         orderProduct.update(); // 상품 재고 감소
     }
 
-    public static Order create(Member member, Payment payment
+    public static Order create(Member member, Payment payment, List<OrderProduct> orderProducts,
     , String address, String orderComment, String recipient, String tel) {
         Order order = Order.builder()
                 .member(member)
@@ -67,12 +67,8 @@ public class Order {
                 .tel(tel)
                 .build();
 
-        // 기존 create 에서 OrderProductList를 받는 대신 member.cart에서 내부적으로 처리
-        List<OrderProduct> wishes = member.getCart().getOrderProducts();
-
-        for (OrderProduct wish: wishes) {
-            order.addOrderProduct(wish);
-        }
+        // orderProducts 순회하며 양방향 추가
+        orderProducts.forEach(order::addOrderProduct);
 
         return order;
     }

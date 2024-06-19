@@ -21,7 +21,7 @@ public record OrderRequest(
         @NotNull String address,
         @NotNull String tel,
         @NotNull String recipient,
-        CouponRequest couponRequest
-//        @NotNull List<OrderProductRequest> orderProducts
+//        CouponRequest couponRequest,
+        @NotNull List<OrderProductRequest> orderProductRequests
 ) {
 }

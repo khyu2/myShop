@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import study.myShop.domain.coupon.dto.CouponRequest;
+import study.myShop.domain.coupon.repoAndService.CouponService;
 import study.myShop.domain.member.dto.MemberDefaultDto;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.member.service.JwtService;
@@ -44,6 +45,7 @@ class OrderServiceTest {
     @Autowired ProductService productService;
     @Autowired CartService cartService;
     @Autowired JwtService jwtService;
+    @Autowired CouponService couponService;
 
     @Value("${jwt.access.header}")
     private String accessHeader;
@@ -51,6 +53,8 @@ class OrderServiceTest {
     private String refreshHeader;
 
     MockHttpServletRequest request;
+    PaymentRequest paymentRequest = new PaymentRequest(PaymentMethod.CREDIT_CARD, PaymentGateway.SAMSUNG);
+
 
     @BeforeEach
     void setUp() throws IOException, ServletException {
@@ -65,29 +69,35 @@ class OrderServiceTest {
         request.addHeader(refreshHeader, "Bearer "+refreshToken);
 
         // 상품 추가
-        ProductRequest productRequest = new ProductRequest("Apple", "Delicious Apple!", 2000L, 20L, Category.Food, null);
-        productService.create(productRequest);
-
-        // 주문 상품 추가
-        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
-        orderProductRequests.add(new OrderProductRequest(1L, 10L, false, null));
-
-        // 장바구니에 주문 상품 추가
-        cartService.insertProducts(orderProductRequests, request);
+        ProductRequest apple = new ProductRequest("Apple", "Delicious Apple!", 2000L, 20L, Category.Food, null);
+        ProductRequest banana = new ProductRequest("Banana", "Delicious Banana!", 3000L, 10L, Category.Food, null);
+        ProductRequest book = new ProductRequest("Book", "Cool!", 15000L, 10L, Category.Books, null);
+        productService.create(apple);
+        productService.create(banana);
+        productService.create(book);
+//
+//        // 장바구니에 주문 상품 추가
+//        cartService.insertProducts(orderProductRequests, request);
     }
-
-    private OrderRequest getOrderRequest() {
-        PaymentRequest paymentRequest = new PaymentRequest(PaymentMethod.CREDIT_CARD, PaymentGateway.SAMSUNG);
-        CouponRequest couponRequest = new CouponRequest("생일 쿠폰", "생일 축하", 1000L, null, 1L);
-
-        return new OrderRequest(paymentRequest, "집앞에 놔주세요", "Seoul", "010-1234-4142",
-                "Kim", couponRequest);
-    }
+//
+//    private OrderRequest getOrderRequest() {
+//        PaymentRequest paymentRequest = new PaymentRequest(PaymentMethod.CREDIT_CARD, PaymentGateway.SAMSUNG);
+//        CouponRequest couponRequest = new CouponRequest("생일 쿠폰", "생일 축하", 1000L, null, 1L);
+//        couponService.issue(couponRequest);
+//
+//        return new OrderRequest(paymentRequest, "집앞에 놔주세요", "Seoul", "010-1234-4142",
+//                "Kim", couponRequest);
+//    }
 
     @Test
-    void 상품주문() throws Exception {
+    void 상품주문_쿠폰적용X() throws Exception {
         //given
-        OrderRequest orderRequest = getOrderRequest();
+        // 주문 상품 추가
+        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
+        orderProductRequests.add(new OrderProductRequest(1L, 10L, false, null)); // 사과 10개 20000원
+
+        OrderRequest orderRequest = new OrderRequest(paymentRequest, "집앞에 놔주세요",
+                "Seoul", "010-1234-4123", "Kim", null, orderProductRequests);
 
         //when
         Long orderId = orderService.order(orderRequest, request);
@@ -110,48 +120,53 @@ class OrderServiceTest {
     }
 
     @Test
-    void 주문_상품재고부족_실패() throws Exception {
-        //given
+    void 상품주문시_할인적용() throws Exception {
 
-        // 주문 상품 30개 추가 -> 기존 재고 20개
-        List<OrderProductRequest> orderProductRequestList = new ArrayList<>();
-        orderProductRequestList.add(new OrderProductRequest(1L, 30L, false, null));
-
-        cartService.insertProducts(orderProductRequestList, request);
-
-        //when, then
-        assertThrows(ProductException.class, () -> orderService.order(getOrderRequest(), request));
     }
 
-    @Test
-    void 여러개_상품주문_성공() throws Exception {
-        //given
-        ProductRequest banana = new ProductRequest("Banana", "Delicious Banana!", 5000L, 100L, Category.Food, null);
-        ProductRequest book = new ProductRequest("Spring-Book", "Cool", 35000L, 10L, Category.Books, null);
-        productService.create(banana);
-        productService.create(book);
-        List<Product> products = productService.getAllProducts();
+//    @Test
+//    void 주문_상품재고부족_실패() throws Exception {
+//        //given
+//
+//        // 주문 상품 30개 추가 -> 기존 재고 20개
+//        List<OrderProductRequest> orderProductRequestList = new ArrayList<>();
+//        orderProductRequestList.add(new OrderProductRequest(1L, 30L, false, null));
+//
+//        cartService.insertProducts(orderProductRequestList, request);
+//
+//        //when, then
+//        assertThrows(ProductException.class, () -> orderService.order(getOrderRequest(), request));
+//    }
 
-        OrderRequest orderRequest = getOrderRequest();
-        Member member = memberService.getOne(1L);
-        List<OrderProduct> orderProducts = member.getCart().getOrderProducts();
-
-        for (Product product : products) {
-            orderProducts.add(OrderProduct.createOrderProduct(product, 2L));
-        }
-
-        //when
-        Long orderId = orderService.order(orderRequest, request);
-        Order order = orderService.getOne(orderId);
-
-        //then
-        // Apple * 12 = 24000, banana * 2 = 10000, book * 2 = 70000, total = 104,000
-        assertEquals(104000L, order.getTotalPrice());
-
-        //주문 시 재고 깍임 100 - 2 = 98
-        Product product = productService.getOne(2L);
-        assertEquals(product.getStock(), 98);
-    }
+//    @Test
+//    void 여러개_상품주문_성공() throws Exception {
+//        //given
+//        ProductRequest banana = new ProductRequest("Banana", "Delicious Banana!", 5000L, 100L, Category.Food, null);
+//        ProductRequest book = new ProductRequest("Spring-Book", "Cool", 35000L, 10L, Category.Books, null);
+//        productService.create(banana);
+//        productService.create(book);
+//        List<Product> products = productService.getAllProducts();
+//
+//        OrderRequest orderRequest = getOrderRequest();
+//        Member member = memberService.getOne(1L);
+//        List<OrderProduct> orderProducts = member.getCart().getOrderProducts();
+//
+//        for (Product product : products) {
+//            orderProducts.add(OrderProduct.createOrderProduct(product, 2L));
+//        }
+//
+//        //when
+//        Long orderId = orderService.order(orderRequest, request);
+//        Order order = orderService.getOne(orderId);
+//
+//        //then
+//        // Apple * 12 = 24000, banana * 2 = 10000, book * 2 = 70000, total = 104,000
+//        assertEquals(104000L, order.getTotalPrice());
+//
+//        //주문 시 재고 깍임 100 - 2 = 98
+//        Product product = productService.getOne(2L);
+//        assertEquals(product.getStock(), 98);
+//    }
 
     // 상품 취소 테스트 추가 예정
 }

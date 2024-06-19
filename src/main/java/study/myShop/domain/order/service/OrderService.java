@@ -12,13 +12,17 @@ import study.myShop.domain.exception.MemberException;
 import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
+import study.myShop.domain.order.dto.OrderProductRequest;
 import study.myShop.domain.order.dto.OrderRequest;
 import study.myShop.domain.order.entity.Order;
 import study.myShop.domain.exception.OrderException;
 import study.myShop.domain.exception.OrderExceptionType;
+import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.order.repository.OrderRepository;
 import study.myShop.domain.payment.entity.Payment;
 import study.myShop.domain.payment.repoAndService.PaymentService;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +34,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PaymentService paymentService;
     private final CouponService couponService;
+    private final OrderProductService orderProductService;
     private final JwtService jwtService;
 
+    /**
+     * order, 주문 정보, request, 주문상품 리스트가 들어온다
+     * 주문상품 리스트는 프론트 단에서 List 형태로 받아온다.
+     * 혹은 Controller 단에서 json 형태로 온 것을 파싱해서 전달받음
+     */
     @Transactional
     public Long order(OrderRequest orderRequest, HttpServletRequest request) {
 
@@ -54,17 +64,11 @@ public class OrderService {
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
-        // 주문이 OrderRequest로 들어오면 수신자 정보, 상품과 개수가 들어오는데
-        // 상품과 개수를 리스트로 만들어 Order 에 저장한다
-        // (수정) 모든 주문은 Cart 를 통해 입력받은 뒤 처리한다 -> orderProductService를 Cart로 위임
+        // coupon 적용된 orderProducts 가져오기
+        List<OrderProductRequest> orderProductRequests = orderRequest.orderProductRequests();
+        List<OrderProduct> orderProducts = orderProductService.create(orderProductRequests);
 
-        /**
-         * 쿠폰 사용 처리
-         * 각각 주문 상품에 쿠폰을 적용해야 하는데 OrderProduct <-> Coupon 1:1 매핑시켜줘야 하나?
-         */
-        CouponRequest couponRequest = orderRequest.couponRequest();
-
-        Order order = Order.create(member, payment, address, orderComment, recipient, tel);
+        Order order = Order.create(member, payment, orderProducts, address, orderComment, recipient, tel);
 
         return orderRepository.save(order).getId();
     }
