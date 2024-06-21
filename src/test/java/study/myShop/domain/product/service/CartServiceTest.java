@@ -1,6 +1,7 @@
 package study.myShop.domain.product.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,46 +59,35 @@ class CartServiceTest {
     }
 
     @Test
+    @Order(100)
     void 장바구니_상품_추가() throws Exception {
         //given
-        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
         List<Product> products = productRepository.findAll();
 
-        for (Product product : products) {
-            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L, false, null));
-        }
-
         //when
-        cartService.insertProducts(orderProductRequests, request);
-        List<OrderProduct> wishes = cartService.getWishes(request);
+        products.forEach(product -> cartService.insertProduct(product, request));
+        List<Product> cartList = cartService.getCartList(request);
 
         //then
-        wishes.forEach(System.out::println);
-        assertEquals(2, wishes.size());
+        cartList.forEach(System.out::println);
+        assertEquals(2, cartList.size());
     }
 
     @Test
+    @Order(200)
     void 장바구니_상품_제거() throws Exception {
         //given
-        List<OrderProductRequest> orderProductRequests = new ArrayList<>();
-        List<Product> products = productRepository.findAll();
-
-        for (Product product : products) {
-            orderProductRequests.add(new OrderProductRequest(product.getId(), 2L, false, null));
-        }
-        cartService.insertProducts(orderProductRequests, request);
+        String username = jwtService.getUsername(request);
 
         //when
-        List<OrderProduct> remove = new ArrayList<>();
         Product apple = productRepository.findByName("Apple").get();
-        remove.add(OrderProduct.createOrderProduct(apple, null));
 
-        cartService.removeProducts(remove, request);
-        List<OrderProduct> wishes = cartService.getWishes(request);
+        cartService.removeProducts(apple.getId(), request);
+        List<Product> cartList = cartService.getCartList(request);
 
         //then
-        wishes.forEach(System.out::println);
-        assertEquals(1, wishes.size());
-        assertEquals(35000L, wishes.get(0).getOrderPrice()); // -> 이러면 ArrayList 말고 HashMap으로 가져가는게 낫지 않나?
+        cartList.forEach(System.out::println);
+        assertEquals(1, cartList.size());
+        assertEquals("Spring book", cartList.get(0).getName());
     }
 }

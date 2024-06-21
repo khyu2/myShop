@@ -43,7 +43,6 @@ public class JwtService {
     private static final String BEARER = "Bearer ";
 
     private final MemberRepository memberRepository;
-    private final ObjectMapper objectMapper;
 
     public String createAccessToken(String email) {
         return JWT.create()
@@ -115,6 +114,15 @@ public class JwtService {
             log.error(e.getMessage());
             return Optional.empty();
         }
+    }
+
+    public String getUsername(HttpServletRequest request) {
+        String token = extractAccessToken(request).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_TOKEN)
+        );
+
+        return extractUsername(token)
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {

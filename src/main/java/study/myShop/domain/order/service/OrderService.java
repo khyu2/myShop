@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import study.myShop.domain.coupon.dto.CouponRequest;
 import study.myShop.domain.coupon.repoAndService.CouponService;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.exception.MemberException;

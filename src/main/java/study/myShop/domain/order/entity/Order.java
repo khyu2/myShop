@@ -53,7 +53,7 @@ public class Order {
     }
 
     public static Order create(Member member, Payment payment, List<OrderProduct> orderProducts,
-    , String address, String orderComment, String recipient, String tel) {
+                               String address, String orderComment, String recipient, String tel) {
         Order order = Order.builder()
                 .member(member)
                 .payment(payment)

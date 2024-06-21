@@ -18,7 +18,7 @@ public record MemberDefaultDto(
 ) {
     public Member toEntity() {
         return Member.builder().email(email).password(password).tel(tel).status(MemberStatus.USER)
-                .addr(addr).addrDetails(addrDetails).cart(new Cart()).createdAt(LocalDateTime.now()).build();
+                .addr(addr).addrDetails(addrDetails).createdAt(LocalDateTime.now()).build();
     }
 
     public boolean invalidPassword() {

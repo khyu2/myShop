@@ -5,8 +5,8 @@ import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import study.myShop.domain.coupon.entity.Coupon;
 import study.myShop.domain.order.entity.Order;
-import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.product.entity.Cart;
+import study.myShop.domain.product.entity.Product;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,7 +32,8 @@ public class Member {
     // Member 객체에서 Cascade.ALL 을 해줬기 때문에 CartService에서 save 필요 x
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
-    private Cart cart;
+    @Builder.Default
+    private Cart cart = new Cart();
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -68,10 +69,9 @@ public class Member {
         this.password = passwordEncoder.encode(password);
     }
 
-    public void addProductsInCart(OrderProduct orderProduct) {
-        if (cart == null) cart = new Cart();
+    public void addProductsInCart(Product product) {
         cart.setMember(this);
-        cart.getOrderProducts().add(orderProduct);
+        cart.getProducts().add(product);
     }
 
     public void updateTel(String tel) {

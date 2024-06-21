@@ -24,10 +24,24 @@ public class Product {
     private Long price;
     private Long stock;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 
     private LocalDateTime enroll;
+
+    public Product(Long id, String name, String itemInfo, Long price, Long stock, Category category, LocalDateTime enroll) {
+        this.id = id;
+        this.name = name;
+        this.itemInfo = itemInfo;
+        this.price = price;
+        this.stock = stock;
+        this.category = category;
+        this.enroll = enroll;
+    }
 
     public void addStock(Long quantity) {
         this.stock += quantity;
@@ -49,5 +63,15 @@ public class Product {
         this.price = request.price();
         this.stock = request.stock();
         this.category = request.category();
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", itemInfo='" + itemInfo + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                '}';
     }
 }

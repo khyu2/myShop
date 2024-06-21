@@ -97,15 +97,15 @@ class OrderServiceTest {
         orderProductRequests.add(new OrderProductRequest(1L, 10L, false, null)); // 사과 10개 20000원
 
         OrderRequest orderRequest = new OrderRequest(paymentRequest, "집앞에 놔주세요",
-                "Seoul", "010-1234-4123", "Kim", null, orderProductRequests);
+                "Seoul", "010-1234-4123", "Kim", orderProductRequests);
 
         //when
         Long orderId = orderService.order(orderRequest, request);
         Order order = orderService.getOne(orderId);
 
         //then
-        // 주문 시, 주문한 사용자의 장바구니에 주문상품이 잘 추가되었는지 확인
-        assertEquals(1, order.getMember().getCart().getOrderProducts().size());
+        // 주문 시, 주문한 사용자의 장바구니에 주문상품이 잘 삭제되었는지 확인
+        assertEquals(1, order.getMember().getCart().getProducts().size());
 
         // 주문표의 주문 상품이 잘 저장되었는지 확인
         assertEquals(1, order.getOrderProducts().size());

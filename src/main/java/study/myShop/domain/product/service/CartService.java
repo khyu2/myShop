@@ -5,16 +5,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import study.myShop.domain.exception.ProductException;
+import study.myShop.domain.exception.ProductExceptionType;
 import study.myShop.domain.member.entity.Member;
 import study.myShop.domain.exception.MemberException;
 import study.myShop.domain.exception.MemberExceptionType;
 import study.myShop.domain.member.repository.MemberRepository;
 import study.myShop.domain.member.service.JwtService;
-import study.myShop.domain.order.dto.OrderProductRequest;
-import study.myShop.domain.order.entity.OrderProduct;
 import study.myShop.domain.order.service.OrderProductService;
 import study.myShop.domain.product.entity.Cart;
+import study.myShop.domain.product.entity.Product;
 import study.myShop.domain.product.repository.CartRepository;
+import study.myShop.domain.product.repository.ProductRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,27 +38,20 @@ public class CartService {
     private final OrderProductService orderProductService;
     private final CartRepository cartRepository;
     private final JwtService jwtService;
+    private final ProductRepository productRepository;
 
-    // orderProducts로 받으면 안되고 OrderProductRequest를 통해 입력받아야함 -> OrderProductService 사용.
+    /* 장바구니에 상품 추가 */
     @Transactional
-    public void insertProducts(List<OrderProductRequest> orderProductRequests, HttpServletRequest request) throws ServletException, IOException {
+    public void insertProduct(Product product, HttpServletRequest request) {
         // 사용자 정보 추출
-        String email = getUsername(request);
+        String email = jwtService.getUsername(request);
 
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
-        List<OrderProduct> orderProducts = orderProductService.create(orderProductRequests);
-
         // 사용자 Cart에 주문상품 추가
-        for (OrderProduct orderProduct : orderProducts) {
-            member.addProductsInCart(orderProduct);
-        }
-
-        if (!cartRepository.existsByMemberId(member.getId())) {
-            cartRepository.save(member.getCart());
-        }
+        member.addProductsInCart(product);
     }
 
     /**
@@ -64,41 +59,32 @@ public class CartService {
      * 사용자 장바구니 꺼내와서 List에서 제거
      */
     @Transactional
-    public void removeProducts(List<OrderProduct> removeProducts, HttpServletRequest request) throws ServletException, IOException {
-        String email = getUsername(request);
+    public void removeProducts(Long productId, HttpServletRequest request) throws ServletException, IOException {
+        String email = jwtService.getUsername(request);
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
+        );
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductException(ProductExceptionType.NOT_FOUND_PRODUCT)
+        );
+
+        /* 장바구니에서 상품 제거 */
+        Cart cart = member.getCart();
+        List<Product> cartProducts = cart.getProducts();
+
+        cartProducts.remove(product);
+    }
+
+    public List<Product> getCartList(HttpServletRequest request) throws ServletException, IOException {
+        String email = jwtService.getUsername(request);
 
         Member member = memberRepository.findByEmail(email).orElseThrow(
                 () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         Cart cart = member.getCart();
-        List<OrderProduct> orderProducts = cart.getOrderProducts();
-
-        // 장바구니 순회하며 removeProducts 에 포함된 상품들 제거
-        // -> 만약 수량을 2개 -> 1개로 줄이는 거면 어떻게 처리하지? -> update로 따로 관리
-        // OrderProduct를 ArrayList로 관리할 필요가 있나? HashMap을 통한 삽입, 삭제가 더 효율적
-        // 로직: 각 주문상품을 순회하며 삭제할 상품과 '이름'이 같다면 제거한다 (수량 x)
-        orderProducts.removeIf(orderProduct ->
-                removeProducts.stream().anyMatch(remove -> remove.getProduct().getName().equals(orderProduct.getProduct().getName())));
-    }
-
-    public List<OrderProduct> getWishes(HttpServletRequest request) throws ServletException, IOException {
-        String email = getUsername(request);
-
-        Member member = memberRepository.findByEmail(email).orElseThrow(
-                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
-        );
-
-        Cart cart = member.getCart();
-        return cart.getOrderProducts();
-    }
-
-    private String getUsername(HttpServletRequest request) {
-        String token = jwtService.extractAccessToken(request).orElseThrow(
-                () -> new MemberException(MemberExceptionType.NOT_FOUND_TOKEN)
-        );
-
-        return jwtService.extractUsername(token)
-                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+        return cart.getProducts();
     }
 }
